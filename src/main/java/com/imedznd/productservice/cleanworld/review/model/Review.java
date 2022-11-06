@@ -1,6 +1,5 @@
 package com.imedznd.productservice.cleanworld.review.model;
 
-import com.imedznd.productservice.cleanworld.product.model.Product;
 import io.vavr.control.Either;
 import lombok.Builder;
 import lombok.Data;
