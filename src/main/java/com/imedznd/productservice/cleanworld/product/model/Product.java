@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
@@ -27,6 +28,8 @@ public final class Product {
     private final int rating;
     private final String status;
     private final Set<Review> reviews;
+    private final Instant createdDate;
+    private final Instant lastUpdatedDate;
 
     private Product(
             final String name,
@@ -37,7 +40,9 @@ public final class Product {
             final int saleCounter,
             final int rating,
             final String status,
-            final Set<Review> reviews
+            final Set<Review> reviews,
+            final Instant createdDate,
+            final Instant lastUpdatedDate
     ) {
         this.name = name;
         this.category = category;
@@ -48,6 +53,8 @@ public final class Product {
         this.rating = rating;
         this.status = status;
         this.reviews = reviews;
+        this.createdDate = createdDate;
+        this.lastUpdatedDate = lastUpdatedDate;
     }
 
     public static Either<Collection<? extends ProductError>, Product> of(
@@ -59,7 +66,9 @@ public final class Product {
             final int saleCounter,
             final int rating,
             final String status,
-            final Set<Review> reviews
+            final Set<Review> reviews,
+            final Instant createdDate,
+            final Instant lastUpdatedDate
     ) {
         final var checkResult =
                 checkInput(
@@ -71,7 +80,9 @@ public final class Product {
                         saleCounter,
                         rating,
                         status,
-                        reviews
+                        reviews,
+                        createdDate,
+                        lastUpdatedDate
                 );
         return
                 checkResult.isEmpty()
@@ -86,10 +97,11 @@ public final class Product {
                                         saleCounter,
                                         rating,
                                         status,
-                                        reviews
+                                        reviews,
+                                        createdDate,
+                                        lastUpdatedDate
                                 )
-                        )
-                        :
+                        ) :
                         Either.left(checkResult);
     }
 
@@ -102,7 +114,9 @@ public final class Product {
             final int saleCounter,
             final int rating,
             final String status,
-            final Set<Review> reviews
+            final Set<Review> reviews,
+            final Instant createdDate,
+            final Instant lastUpdatedDate
     ) {
         return
                 Stream.of(
@@ -114,11 +128,42 @@ public final class Product {
                                 checkSalesCounter(saleCounter),
                                 checkRating(rating),
                                 checkStatus(status),
-                                checkReviews(reviews)
+                                checkReviews(reviews),
+                                checkCreatedDate(createdDate),
+                                checkLastUpdatedDate(lastUpdatedDate)
                         )
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .collect(Collectors.toUnmodifiableSet());
+    }
+
+    private static Optional<? extends ProductError> checkCreatedDate(Instant createdDate) {
+        return
+                checkInstantOrError(
+                        createdDate,
+                        ProductError.CreatedDateError::new
+                );
+    }
+
+    private static Optional<? extends ProductError> checkLastUpdatedDate(Instant lastUpdatedDate) {
+        return
+                checkInstantOrError(
+                        lastUpdatedDate,
+                        ProductError.LastUpdatedDateError::new
+                );
+    }
+
+    private static Optional<? extends ProductError> checkInstantOrError(
+            Instant instant,
+            Supplier<? extends ProductError> supplierError
+    ) {
+        return checkInstant(instant)
+                ? Optional.empty()
+                : Optional.of(supplierError.get());
+    }
+
+    private static boolean checkInstant(Instant instant) {
+        return instant.compareTo(Instant.now()) > 0;
     }
 
     private static Optional<? extends ProductError> checkReviews(Set<Review> reviews) {
@@ -324,6 +369,18 @@ public final class Product {
 
         record RatingError(String message) implements ProductError {
             public RatingError() {
+                this("");
+            }
+        }
+
+        record LastUpdatedDateError(String message) implements ProductError {
+            public LastUpdatedDateError() {
+                this("");
+            }
+        }
+
+        record CreatedDateError(String message) implements ProductError {
+            public CreatedDateError() {
                 this("");
             }
         }

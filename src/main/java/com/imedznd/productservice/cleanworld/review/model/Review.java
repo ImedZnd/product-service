@@ -1,9 +1,11 @@
 package com.imedznd.productservice.cleanworld.review.model;
 
+import com.imedznd.productservice.cleanworld.product.model.Product;
 import io.vavr.control.Either;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
@@ -18,31 +20,42 @@ public class Review {
     private final String title;
     private final int rating;
     private final String userId;
+    private final Instant createdDate;
+    private final Instant lastUpdatedDate;
 
     private Review(
             final String description,
             final String title,
             final int rating,
-            final String userId
+            final String userId,
+            final Instant createdDate,
+            final Instant lastUpdatedDate
+
     ) {
         this.description = description;
         this.rating = rating;
         this.title = title;
         this.userId = userId;
+        this.createdDate = createdDate;
+        this.lastUpdatedDate = lastUpdatedDate;
     }
 
     public static Either<Collection<? extends ReviewError>, Review> of(
             final String description,
             final String title,
             final int rating,
-            final String userId
+            final String userId,
+            final Instant createdDate,
+            final Instant lastUpdatedDate
     ) {
         final var checkResult =
                 checkInput(
                         description,
                         title,
                         rating,
-                        userId
+                        userId,
+                        createdDate,
+                        lastUpdatedDate
                 );
         return
                 checkResult.isEmpty()
@@ -52,30 +65,64 @@ public class Review {
                                         description,
                                         title,
                                         rating,
-                                        userId
+                                        userId,
+                                        createdDate,
+                                        lastUpdatedDate
                                 )
                         )
                         :
                         Either.left(checkResult);
-
     }
 
     private static Collection<? extends ReviewError> checkInput(
             final String description,
             final String title,
             final int rating,
-            final String userId
+            final String userId,
+            final Instant createdDate,
+            final Instant lastUpdatedDate
     ) {
         return
                 Stream.of(
                                 checkTitle(title),
                                 checkDescription(description),
                                 checkUserId(userId),
-                                checkRating(rating)
+                                checkRating(rating),
+                                checkCreatedDate(createdDate),
+                                checkLastUpdatedDate(lastUpdatedDate)
                         )
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .collect(Collectors.toUnmodifiableSet());
+    }
+
+    private static Optional<? extends ReviewError> checkCreatedDate(Instant createdDate) {
+        return
+                checkInstantOrError(
+                        createdDate,
+                        ReviewError.CreatedDateError::new
+                );
+    }
+
+    private static Optional<? extends ReviewError> checkLastUpdatedDate(Instant lastUpdatedDate) {
+        return
+                checkInstantOrError(
+                        lastUpdatedDate,
+                        ReviewError.LastUpdatedDateError::new
+                );
+    }
+
+    private static Optional<? extends ReviewError> checkInstantOrError(
+            Instant instant,
+            Supplier<? extends ReviewError> supplierError
+    ) {
+        return checkInstant(instant)
+                ? Optional.empty()
+                : Optional.of(supplierError.get());
+    }
+
+    private static boolean checkInstant(Instant instant) {
+        return instant.compareTo(Instant.now()) < 0;
     }
 
     private static Optional<? extends ReviewError> checkRating(int rating) {
@@ -104,9 +151,8 @@ public class Review {
 
     private static boolean checkIntegerNotNegative(int integer) {
         return
-                integer < 0;
+                integer > 0;
     }
-
 
     private static Optional<? extends ReviewError> checkUserId(final String description) {
         return
@@ -152,7 +198,6 @@ public class Review {
         return !string.isEmpty();
     }
 
-
     public sealed interface ReviewError {
 
         String message();
@@ -177,6 +222,18 @@ public class Review {
 
         record UserIdError(String message) implements ReviewError {
             public UserIdError() {
+                this("");
+            }
+        }
+
+        record CreatedDateError(String message) implements ReviewError {
+            public CreatedDateError() {
+                this("");
+            }
+        }
+
+        record LastUpdatedDateError(String message) implements ReviewError {
+            public LastUpdatedDateError() {
                 this("");
             }
         }
