@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 @Data
 @Builder
 public class Review {
+    private final String id;
     private final String description;
     private final String title;
     private final int rating;
@@ -23,6 +24,7 @@ public class Review {
     private final Instant lastUpdatedDate;
 
     private Review(
+            final String id,
             final String description,
             final String title,
             final int rating,
@@ -31,6 +33,7 @@ public class Review {
             final Instant lastUpdatedDate
 
     ) {
+        this.id = id;
         this.description = description;
         this.rating = rating;
         this.title = title;
@@ -40,6 +43,7 @@ public class Review {
     }
 
     public static Either<Collection<? extends ReviewError>, Review> of(
+            final String id,
             final String description,
             final String title,
             final int rating,
@@ -61,6 +65,7 @@ public class Review {
                         ?
                         Either.right(
                                 new Review(
+                                        id,
                                         description,
                                         title,
                                         rating,
@@ -89,7 +94,7 @@ public class Review {
                                 checkRating(rating),
                                 checkCreatedDate(createdDate),
                                 checkLastUpdatedDate(lastUpdatedDate),
-                                checkLastUpdatedDateIsLowerThanCreatedDate(createdDate,lastUpdatedDate)
+                                checkLastUpdatedDateIsLowerThanCreatedDate(createdDate, lastUpdatedDate)
                         )
                         .filter(Optional::isPresent)
                         .map(Optional::get)
@@ -99,27 +104,27 @@ public class Review {
     private static Optional<? extends ReviewError> checkLastUpdatedDateIsLowerThanCreatedDate(
             Instant createdDate,
             Instant lastUpdatedDate
-    ){
+    ) {
         return
                 checkFirstInstantGraterThanSecondInstance(
                         createdDate,
                         lastUpdatedDate,
                         ReviewError.LastUpdatedDateGreaterThanCreatedDateError::new
-                        );
+                );
     }
 
     private static Optional<? extends ReviewError> checkFirstInstantGraterThanSecondInstance(
             Instant firstInstant,
             Instant secondInstant,
             Supplier<? extends ReviewError> supplierError
-    ){
+    ) {
         return
                 checkTwoInstant(firstInstant, secondInstant)
-                ? Optional.empty()
-                : Optional.of(supplierError.get());
+                        ? Optional.empty()
+                        : Optional.of(supplierError.get());
     }
 
-    private static boolean checkTwoInstant(Instant firstInstant,Instant secondInstant){
+    private static boolean checkTwoInstant(Instant firstInstant, Instant secondInstant) {
         return firstInstant.compareTo(secondInstant) <= 0;
     }
 
@@ -149,7 +154,7 @@ public class Review {
     }
 
     private static boolean checkInstant(Instant instant) {
-        return instant.compareTo(Instant.now()) < 0;
+        return instant.compareTo(Instant.now().minusSeconds(5)) < 0;
     }
 
     private static Optional<? extends ReviewError> checkRating(int rating) {

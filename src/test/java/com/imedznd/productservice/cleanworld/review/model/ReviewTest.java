@@ -23,7 +23,7 @@ class ReviewTest {
         final var createdDate = Instant.ofEpochSecond(timeInSeconds);
         final var lastUpdatedDate = Instant.ofEpochSecond(timeInSeconds);
         final var result =
-                Review.of(
+                Review.of(null,
                         description,
                         title,
                         rating,
@@ -53,7 +53,7 @@ class ReviewTest {
         final var createdDate = Instant.ofEpochSecond(timeInSeconds);
         final var lastUpdatedDate = Instant.ofEpochSecond(timeInSeconds);
         final var result =
-                Review.of(
+                Review.of(null,
                         description,
                         title,
                         rating,
@@ -79,7 +79,7 @@ class ReviewTest {
         final var createdDate = Instant.ofEpochSecond(timeInSeconds);
         final var lastUpdatedDate = Instant.ofEpochSecond(timeInSeconds);
         final var result =
-                Review.of(
+                Review.of(null,
                         description,
                         title,
                         rating,
@@ -105,7 +105,7 @@ class ReviewTest {
         final var createdDate = Instant.ofEpochSecond(timeInSeconds);
         final var lastUpdatedDate = Instant.ofEpochSecond(timeInSeconds);
         final var result =
-                Review.of(
+                Review.of(null,
                         description,
                         title,
                         rating,
@@ -131,7 +131,7 @@ class ReviewTest {
         final var createdDate = Instant.ofEpochSecond(timeInSeconds);
         final var lastUpdatedDate = Instant.ofEpochSecond(timeInSeconds);
         final var result =
-                Review.of(
+                Review.of(null,
                         description,
                         title,
                         rating,
@@ -157,7 +157,7 @@ class ReviewTest {
         final var lastUpdatedDate = Instant.ofEpochSecond(
                 LocalDateTime.now().minusDays(1).toEpochSecond(ZoneOffset.UTC));
         final var result =
-                Review.of(
+                Review.of(null,
                         description,
                         title,
                         rating,
@@ -187,7 +187,7 @@ class ReviewTest {
         final var timeInSeconds2 = localDateTime2.toEpochSecond(ZoneOffset.UTC);
         final var createdDate = Instant.ofEpochSecond(timeInSeconds2);
         final var result =
-                Review.of(
+                Review.of(null,
                         description,
                         title,
                         rating,

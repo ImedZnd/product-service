@@ -26,7 +26,7 @@ public final class Product {
     private final String imgUrl;
     private final int saleCounter;
     private final int rating;
-    private final String status;
+    private final ProductStatus status;
     private final Set<Review> reviews;
     private final Instant createdDate;
     private final Instant lastUpdatedDate;
@@ -39,7 +39,7 @@ public final class Product {
             final String imgUrl,
             final int saleCounter,
             final int rating,
-            final String status,
+            final ProductStatus status,
             final Set<Review> reviews,
             final Instant createdDate,
             final Instant lastUpdatedDate
@@ -65,7 +65,7 @@ public final class Product {
             final String imgUrl,
             final int saleCounter,
             final int rating,
-            final String status,
+            final ProductStatus status,
             final Set<Review> reviews,
             final Instant createdDate,
             final Instant lastUpdatedDate
@@ -113,7 +113,7 @@ public final class Product {
             final String imgUrl,
             final int saleCounter,
             final int rating,
-            final String status,
+            final ProductStatus status,
             final Set<Review> reviews,
             final Instant createdDate,
             final Instant lastUpdatedDate
@@ -127,7 +127,6 @@ public final class Product {
                                 checkImgUrl(imgUrl),
                                 checkSalesCounter(saleCounter),
                                 checkRating(rating),
-                                checkStatus(status),
                                 checkReviews(reviews),
                                 checkCreatedDate(createdDate),
                                 checkLastUpdatedDate(lastUpdatedDate)
@@ -287,14 +286,6 @@ public final class Product {
                 );
     }
 
-    private static Optional<? extends ProductError> checkStatus(final String status) {
-        return
-                checkStringOrError(
-                        status,
-                        ProductError.StatusError::new
-                );
-    }
-
     private static Optional<? extends ProductError> checkStringOrError(
             final String string,
             final Supplier<? extends ProductError> errorSupplier
@@ -314,6 +305,12 @@ public final class Product {
     private static boolean checkStringNotEmpty(String string) {
         return !string.isEmpty();
     }
+
+    enum ProductStatus {
+        AVAILABLE,
+        DISCONTINUED
+    }
+
 
     public sealed interface ProductError {
 
