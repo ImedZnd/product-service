@@ -40,4 +40,164 @@ class ReviewTest {
                 () -> assertEquals(lastUpdatedDate, result.getLastUpdatedDate())
         );
     }
+
+    @Test
+    @DisplayName("review description must not be empty")
+    void review_description_must_not_be_empty() {
+        final var description = "";
+        final var title = "title";
+        final var rating = 5;
+        final var userId = "userId";
+        final var localDateTime = LocalDateTime.parse("2019-10-25T12:15:30");
+        final var timeInSeconds = localDateTime.toEpochSecond(ZoneOffset.UTC);
+        final var createdDate = Instant.ofEpochSecond(timeInSeconds);
+        final var lastUpdatedDate = Instant.ofEpochSecond(timeInSeconds);
+        final var result =
+                Review.of(
+                        description,
+                        title,
+                        rating,
+                        userId,
+                        createdDate,
+                        lastUpdatedDate
+                ).getLeft();
+        assertAll(
+                () -> assertEquals(result.size(),1),
+                () -> assertTrue(result.stream().allMatch(it -> it instanceof Review.ReviewError.DescriptionError))
+        );
+    }
+
+    @Test
+    @DisplayName("review title must not be empty")
+    void review_title_must_not_be_empty() {
+        final var description = "description";
+        final var title = "";
+        final var rating = 5;
+        final var userId = "userId";
+        final var localDateTime = LocalDateTime.parse("2019-10-25T12:15:30");
+        final var timeInSeconds = localDateTime.toEpochSecond(ZoneOffset.UTC);
+        final var createdDate = Instant.ofEpochSecond(timeInSeconds);
+        final var lastUpdatedDate = Instant.ofEpochSecond(timeInSeconds);
+        final var result =
+                Review.of(
+                        description,
+                        title,
+                        rating,
+                        userId,
+                        createdDate,
+                        lastUpdatedDate
+                ).getLeft();
+        assertAll(
+                () -> assertEquals(result.size(),1),
+                () -> assertTrue(result.stream().allMatch(it -> it instanceof Review.ReviewError.TitleError))
+        );
+    }
+
+    @Test
+    @DisplayName("review rating must not be negative")
+    void review_rating_must_not_be_negative() {
+        final var description = "description";
+        final var title = "title";
+        final var rating = -2;
+        final var userId = "userId";
+        final var localDateTime = LocalDateTime.parse("2019-10-25T12:15:30");
+        final var timeInSeconds = localDateTime.toEpochSecond(ZoneOffset.UTC);
+        final var createdDate = Instant.ofEpochSecond(timeInSeconds);
+        final var lastUpdatedDate = Instant.ofEpochSecond(timeInSeconds);
+        final var result =
+                Review.of(
+                        description,
+                        title,
+                        rating,
+                        userId,
+                        createdDate,
+                        lastUpdatedDate
+                ).getLeft();
+        assertAll(
+                () -> assertEquals(result.size(),1),
+                () -> assertTrue(result.stream().allMatch(it -> it instanceof Review.ReviewError.RatingError))
+        );
+    }
+
+    @Test
+    @DisplayName("review userId must not be negative")
+    void review_userId_must_not_be_negative() {
+        final var description = "description";
+        final var title = "title";
+        final var rating = 5;
+        final var userId = "";
+        final var localDateTime = LocalDateTime.parse("2019-10-25T12:15:30");
+        final var timeInSeconds = localDateTime.toEpochSecond(ZoneOffset.UTC);
+        final var createdDate = Instant.ofEpochSecond(timeInSeconds);
+        final var lastUpdatedDate = Instant.ofEpochSecond(timeInSeconds);
+        final var result =
+                Review.of(
+                        description,
+                        title,
+                        rating,
+                        userId,
+                        createdDate,
+                        lastUpdatedDate
+                ).getLeft();
+        assertAll(
+                () -> assertEquals(result.size(),1),
+                () -> assertTrue(result.stream().allMatch(it -> it instanceof Review.ReviewError.UserIdError))
+        );
+    }
+
+    @Test
+    @DisplayName("review createdDate must not be greater than today")
+    void review_createdDate_must_not_be_greater_than_today() {
+        final var description = "description";
+        final var title = "title";
+        final var rating = 5;
+        final var userId = "userId";
+        final var createdDate = Instant.ofEpochSecond(
+                LocalDateTime.now().plusDays(5).toEpochSecond(ZoneOffset.UTC));
+        final var lastUpdatedDate = Instant.ofEpochSecond(
+                LocalDateTime.now().minusDays(1).toEpochSecond(ZoneOffset.UTC));
+        final var result =
+                Review.of(
+                        description,
+                        title,
+                        rating,
+                        userId,
+                        createdDate,
+                        lastUpdatedDate
+                ).getLeft();
+        result.stream().forEach(System.out::println);
+        assertAll(
+                () -> assertEquals(result.size(),2),
+                () -> assertTrue(result.stream().anyMatch(it -> it instanceof Review.ReviewError.CreatedDateError)),
+                () -> assertTrue(result.stream().anyMatch(it -> it instanceof Review.ReviewError.LastUpdatedDateGreaterThanCreatedDateError))
+        );
+    }
+
+    @Test
+    @DisplayName("review lastUpdatedDate must not be greater than today")
+    void review_lastUpdatedDate_must_not_be_greater_than_today() {
+        final var description = "description";
+        final var title = "title";
+        final var rating = 5;
+        final var userId = "userId";
+        final var localDateTime = LocalDateTime.parse("2015-10-25T12:15:30");
+        final var timeInSeconds = localDateTime.toEpochSecond(ZoneOffset.UTC);
+        final var lastUpdatedDate = Instant.ofEpochSecond(timeInSeconds);
+        final var localDateTime2 = LocalDateTime.parse("2020-10-25T12:15:30");
+        final var timeInSeconds2 = localDateTime2.toEpochSecond(ZoneOffset.UTC);
+        final var createdDate = Instant.ofEpochSecond(timeInSeconds2);
+        final var result =
+                Review.of(
+                        description,
+                        title,
+                        rating,
+                        userId,
+                        createdDate,
+                        lastUpdatedDate
+                ).getLeft();
+        assertAll(
+                () -> assertEquals(result.size(),1),
+                () -> assertTrue(result.stream().allMatch(it -> it instanceof Review.ReviewError.LastUpdatedDateGreaterThanCreatedDateError))
+        );
+    }
 }

@@ -88,11 +88,39 @@ public class Review {
                                 checkUserId(userId),
                                 checkRating(rating),
                                 checkCreatedDate(createdDate),
-                                checkLastUpdatedDate(lastUpdatedDate)
+                                checkLastUpdatedDate(lastUpdatedDate),
+                                checkLastUpdatedDateIsLowerThanCreatedDate(createdDate,lastUpdatedDate)
                         )
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .collect(Collectors.toUnmodifiableSet());
+    }
+
+    private static Optional<? extends ReviewError> checkLastUpdatedDateIsLowerThanCreatedDate(
+            Instant createdDate,
+            Instant lastUpdatedDate
+    ){
+        return
+                checkFirstInstantGraterThanSecondInstance(
+                        createdDate,
+                        lastUpdatedDate,
+                        ReviewError.LastUpdatedDateGreaterThanCreatedDateError::new
+                        );
+    }
+
+    private static Optional<? extends ReviewError> checkFirstInstantGraterThanSecondInstance(
+            Instant firstInstant,
+            Instant secondInstant,
+            Supplier<? extends ReviewError> supplierError
+    ){
+        return
+                checkTwoInstant(firstInstant, secondInstant)
+                ? Optional.empty()
+                : Optional.of(supplierError.get());
+    }
+
+    private static boolean checkTwoInstant(Instant firstInstant,Instant secondInstant){
+        return firstInstant.compareTo(secondInstant) <= 0;
     }
 
     private static Optional<? extends ReviewError> checkCreatedDate(Instant createdDate) {
@@ -233,6 +261,12 @@ public class Review {
 
         record LastUpdatedDateError(String message) implements ReviewError {
             public LastUpdatedDateError() {
+                this("");
+            }
+        }
+
+        record LastUpdatedDateGreaterThanCreatedDateError(String message) implements ReviewError {
+            public LastUpdatedDateGreaterThanCreatedDateError() {
                 this("");
             }
         }
