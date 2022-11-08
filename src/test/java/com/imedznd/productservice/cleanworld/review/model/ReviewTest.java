@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ReviewTest {
 
     @Test
-    @DisplayName("review should be initiated with initial fields")
+    @DisplayName("should be initiated with initial fields")
     void review_should_be_initiated_with_initial_fields() {
         final var description = "description";
         final var title = "title";
@@ -42,7 +42,7 @@ class ReviewTest {
     }
 
     @Test
-    @DisplayName("review description must not be empty")
+    @DisplayName("description must not be empty")
     void review_description_must_not_be_empty() {
         final var description = "";
         final var title = "title";
@@ -62,13 +62,13 @@ class ReviewTest {
                         lastUpdatedDate
                 ).getLeft();
         assertAll(
-                () -> assertEquals(result.size(),1),
+                () -> assertEquals(1,result.size()),
                 () -> assertTrue(result.stream().allMatch(it -> it instanceof Review.ReviewError.DescriptionError))
         );
     }
 
     @Test
-    @DisplayName("review title must not be empty")
+    @DisplayName("title must not be empty")
     void review_title_must_not_be_empty() {
         final var description = "description";
         final var title = "";
@@ -88,13 +88,13 @@ class ReviewTest {
                         lastUpdatedDate
                 ).getLeft();
         assertAll(
-                () -> assertEquals(result.size(),1),
+                () -> assertEquals(1,result.size()),
                 () -> assertTrue(result.stream().allMatch(it -> it instanceof Review.ReviewError.TitleError))
         );
     }
 
     @Test
-    @DisplayName("review rating must not be negative")
+    @DisplayName("rating must not be negative")
     void review_rating_must_not_be_negative() {
         final var description = "description";
         final var title = "title";
@@ -114,13 +114,13 @@ class ReviewTest {
                         lastUpdatedDate
                 ).getLeft();
         assertAll(
-                () -> assertEquals(result.size(),1),
+                () -> assertEquals(1,result.size()),
                 () -> assertTrue(result.stream().allMatch(it -> it instanceof Review.ReviewError.RatingError))
         );
     }
 
     @Test
-    @DisplayName("review userId must not be negative")
+    @DisplayName("userId must not be negative")
     void review_userId_must_not_be_negative() {
         final var description = "description";
         final var title = "title";
@@ -140,13 +140,13 @@ class ReviewTest {
                         lastUpdatedDate
                 ).getLeft();
         assertAll(
-                () -> assertEquals(result.size(),1),
+                () -> assertEquals(1,result.size()),
                 () -> assertTrue(result.stream().allMatch(it -> it instanceof Review.ReviewError.UserIdError))
         );
     }
 
     @Test
-    @DisplayName("review createdDate must not be greater than today")
+    @DisplayName("createdDate must not be greater than today")
     void review_createdDate_must_not_be_greater_than_today() {
         final var description = "description";
         final var title = "title";
@@ -167,14 +167,42 @@ class ReviewTest {
                 ).getLeft();
         result.stream().forEach(System.out::println);
         assertAll(
-                () -> assertEquals(result.size(),2),
+                () -> assertEquals(2,result.size()),
                 () -> assertTrue(result.stream().anyMatch(it -> it instanceof Review.ReviewError.CreatedDateError)),
                 () -> assertTrue(result.stream().anyMatch(it -> it instanceof Review.ReviewError.LastUpdatedDateGreaterThanCreatedDateError))
         );
     }
 
     @Test
-    @DisplayName("review lastUpdatedDate must not be greater than today")
+    @DisplayName("lastUpdatedDate must not be in the future")
+    void lastUpdatedDate_must_not_be_in_the_future() {
+        final var description = "description";
+        final var title = "title";
+        final var rating = 5;
+        final var userId = "userId";
+        final var createdDate = Instant.ofEpochSecond(
+                LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
+        final var lastUpdatedDate = Instant.ofEpochSecond(
+                LocalDateTime.now().plusDays(5).minusDays(1).toEpochSecond(ZoneOffset.UTC));
+        final var result =
+                Review.of(null,
+                        description,
+                        title,
+                        rating,
+                        userId,
+                        createdDate,
+                        lastUpdatedDate
+                ).getLeft();
+        result.stream().forEach(System.out::println);
+        assertAll(
+                () -> assertEquals(2,result.size()),
+                () -> assertTrue(result.stream().anyMatch(it -> it instanceof Review.ReviewError.CreatedDateError)),
+                () -> assertTrue(result.stream().anyMatch(it -> it instanceof Review.ReviewError.LastUpdatedDateError))
+        );
+    }
+
+    @Test
+    @DisplayName("lastUpdatedDate must not be greater than today")
     void review_lastUpdatedDate_must_not_be_greater_than_today() {
         final var description = "description";
         final var title = "title";
@@ -196,7 +224,7 @@ class ReviewTest {
                         lastUpdatedDate
                 ).getLeft();
         assertAll(
-                () -> assertEquals(result.size(),1),
+                () -> assertEquals(1,result.size()),
                 () -> assertTrue(result.stream().allMatch(it -> it instanceof Review.ReviewError.LastUpdatedDateGreaterThanCreatedDateError))
         );
     }

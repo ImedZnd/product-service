@@ -2,7 +2,6 @@ package com.imedznd.productservice.cleanworld.product.model;
 
 import com.imedznd.productservice.cleanworld.review.model.Review;
 import io.vavr.control.Either;
-import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -16,9 +15,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Data
-@Builder
 public final class Product {
 
+    private final String id;
     private final String name;
     private final String description;
     private final BigDecimal price;
@@ -32,6 +31,7 @@ public final class Product {
     private final Instant lastUpdatedDate;
 
     private Product(
+            final String id,
             final String name,
             final String description,
             final BigDecimal price,
@@ -44,6 +44,7 @@ public final class Product {
             final Instant createdDate,
             final Instant lastUpdatedDate
     ) {
+        this.id = id;
         this.name = name;
         this.category = category;
         this.description = description;
@@ -58,6 +59,7 @@ public final class Product {
     }
 
     public static Either<Collection<? extends ProductError>, Product> of(
+            final String id,
             final String name,
             final String description,
             final BigDecimal price,
@@ -89,6 +91,7 @@ public final class Product {
                         ?
                         Either.right(
                                 new Product(
+                                        id,
                                         name,
                                         description,
                                         price,
@@ -162,7 +165,7 @@ public final class Product {
     }
 
     private static boolean checkInstant(Instant instant) {
-        return instant.compareTo(Instant.now()) > 0;
+        return instant.compareTo(Instant.now()) <= 0;
     }
 
     private static Optional<? extends ProductError> checkReviews(Set<Review> reviews) {
@@ -184,8 +187,7 @@ public final class Product {
 
     private static boolean checkSetOfReviews(Set<Review> reviews) {
         return
-                reviews.stream()
-                        .noneMatch(Objects::nonNull);
+                Objects.nonNull(reviews);
     }
 
     private static Optional<? extends ProductError> checkSalesCounter(int saleCounter) {
@@ -222,7 +224,7 @@ public final class Product {
 
     private static boolean checkIntegerNotNegative(int integer) {
         return
-                integer < 0;
+                integer > 0;
     }
 
     private static Optional<? extends ProductError> checkPrice(BigDecimal price) {
@@ -311,7 +313,6 @@ public final class Product {
         DISCONTINUED
     }
 
-
     public sealed interface ProductError {
 
         String message();
@@ -348,12 +349,6 @@ public final class Product {
 
         record SalesCounterError(String message) implements ProductError {
             public SalesCounterError() {
-                this("");
-            }
-        }
-
-        record StatusError(String message) implements ProductError {
-            public StatusError() {
                 this("");
             }
         }

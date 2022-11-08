@@ -1,7 +1,7 @@
 package com.imedznd.productservice.cleanworld.review.model;
 
 import io.vavr.control.Either;
-import lombok.Builder;
+
 import lombok.Data;
 
 import java.time.Instant;
@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Data
-@Builder
 public class Review {
     private final String id;
     private final String description;
@@ -73,8 +72,7 @@ public class Review {
                                         createdDate,
                                         lastUpdatedDate
                                 )
-                        )
-                        :
+                        ) :
                         Either.left(checkResult);
     }
 
@@ -154,7 +152,7 @@ public class Review {
     }
 
     private static boolean checkInstant(Instant instant) {
-        return instant.compareTo(Instant.now().minusSeconds(5)) < 0;
+        return instant.compareTo(Instant.now()) <= 0;
     }
 
     private static Optional<? extends ReviewError> checkRating(int rating) {
