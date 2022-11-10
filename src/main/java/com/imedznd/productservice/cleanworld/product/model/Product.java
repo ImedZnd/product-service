@@ -308,7 +308,7 @@ public final class Product {
         return !string.isEmpty();
     }
 
-    enum ProductStatus {
+    public enum ProductStatus {
         AVAILABLE,
         DISCONTINUED
     }

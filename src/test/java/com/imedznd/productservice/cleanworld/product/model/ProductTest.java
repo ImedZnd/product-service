@@ -594,6 +594,7 @@ class ProductTest {
                         productCreatedDate,
                         productLastUpdatedDate
                 ).getLeft();
+        result.stream().forEach(System.out::println);
         assertAll(
                 () -> assertEquals(2, result.size()),
                 () -> assertTrue(result.stream().anyMatch(it -> it instanceof Product.ProductError.CreatedDateError)),
