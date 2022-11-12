@@ -27,7 +27,7 @@ public record ProductDAO(
         Instant createdDate,
         Instant lastUpdatedDate
 ) {
-    public static ProductDAO toDTO(Product product){
+    public static ProductDAO toDAO(Product product){
         return new ProductDAO(
                 product.getId(),
                 product.getName(),

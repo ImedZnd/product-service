@@ -20,7 +20,7 @@ public record ReviewDAO(
         Instant lastUpdatedDate
 ) {
 
-    public static ReviewDAO toDTO(Review review) {
+    public static ReviewDAO toDAO(Review review) {
         return new ReviewDAO(
                 review.getId(),
                 review.getDescription(),

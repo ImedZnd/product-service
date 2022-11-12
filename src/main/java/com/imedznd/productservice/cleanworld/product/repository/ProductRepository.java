@@ -14,8 +14,6 @@ public interface ProductRepository {
 
     Mono<Product> delete(String id);
 
-    Flux<Product> findByUserId(String userId);
-
     Flux<Product> findByCategory(String category);
 
 }
