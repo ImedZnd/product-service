@@ -16,4 +16,14 @@ public interface ReviewRepository {
 
     Flux<Review> findByUserId(String userId);
 
+    sealed interface RepositoryReviewError{
+
+        String message();
+
+        record ReviewIOError(String message)  implements RepositoryReviewError{
+            public ReviewIOError(){
+                this("");
+            }
+        }
+    }
 }

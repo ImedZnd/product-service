@@ -4,10 +4,12 @@ import com.imedznd.productservice.cleanworld.review.model.Review;
 import com.imedznd.productservice.cleanworld.review.repository.ReviewRepository;
 import com.imedznd.productservice.dirtyworld.review.dao.ReviewDAO;
 import io.vavr.control.Either;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 public class MongoReviewRepository implements ReviewRepository {
 
@@ -29,20 +31,12 @@ public class MongoReviewRepository implements ReviewRepository {
 
     @Override
     public Flux<Review> findAll() {
-        return reactiveMongodbReviewRepository
-                .findAll()
-                .map(ReviewDAO::toModel)
-                .filter(Either::isRight)
-                .map(Either::get);
+        return returnFluxOfReviews(ReactiveCrudRepository::findAll);
     }
 
     @Override
     public Mono<Review> findById(String id) {
-        return reactiveMongodbReviewRepository
-                .findById(id)
-                .map(ReviewDAO::toModel)
-                .filter(Either::isRight)
-                .map(Either::get);
+        return returnMonoReview(it -> it.findById(id));
     }
 
     @Override
@@ -63,10 +57,27 @@ public class MongoReviewRepository implements ReviewRepository {
 
     @Override
     public Flux<Review> findByUserId(String userId) {
-        return reactiveMongodbReviewRepository
-                .findByUserId(userId)
+        return returnFluxOfReviews(
+                it -> it.findByUserId(userId)
+                );
+    }
+
+    private Flux<Review> returnFluxOfReviews(
+            final Function<ReactiveMongodbReviewRepository, Flux<ReviewDAO>> function
+            ){
+        return function.apply(reactiveMongodbReviewRepository)
                 .map(ReviewDAO::toModel)
                 .filter(Either::isRight)
                 .map(Either::get);
+    }
+
+    private Mono<Review> returnMonoReview(
+            final Function<ReactiveMongodbReviewRepository, Mono<ReviewDAO>> function
+    ){
+        return function.apply(reactiveMongodbReviewRepository)
+                .map(ReviewDAO::toModel)
+                .filter(Either::isRight)
+                .map(Either::get);
+
     }
 }

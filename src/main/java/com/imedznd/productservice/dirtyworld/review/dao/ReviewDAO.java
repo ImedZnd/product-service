@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.Instant;
 import java.util.Collection;
 
-@Document(value = "review")
+@Document(collection = "review")
 public record ReviewDAO(
         @Id
         String id,

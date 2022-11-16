@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Set;
 
-@Document(value = "product")
+@Document(collection = "product")
 public record ProductDAO(
         @Id
         String id,
