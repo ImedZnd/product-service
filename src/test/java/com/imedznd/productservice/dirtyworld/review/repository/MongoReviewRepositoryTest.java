@@ -20,12 +20,12 @@ import java.time.ZoneOffset;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MongoReviewRepositoryTest {
 
-    private final MongoReviewRepository mongoReviewRepository;
-    private final ReactiveMongodbReviewRepository reactiveMongodbReviewRepository;
+    private ReviewRepository mongoReviewRepository;
+    private ReactiveMongodbReviewRepository reactiveMongodbReviewRepository;
 
     MongoReviewRepositoryTest(
-            MongoReviewRepository mongoReviewRepository,
-            ReactiveMongodbReviewRepository reactiveMongodbReviewRepository
+            @Autowired MongoReviewRepository mongoReviewRepository,
+            @Autowired ReactiveMongodbReviewRepository reactiveMongodbReviewRepository
     ) {
         this.mongoReviewRepository = mongoReviewRepository;
         this.reactiveMongodbReviewRepository = reactiveMongodbReviewRepository;
@@ -53,7 +53,7 @@ class MongoReviewRepositoryTest {
 
     @Test
     @DisplayName("saveCar: save null car must not be valid")
-    void save_null_car_must_not_be_valid() {
+    void save_null_car_must_not_be_valid() throws InterruptedException {
         final var description = "description";
         final var title = "title";
         final var rating = 5;
@@ -72,8 +72,10 @@ class MongoReviewRepositoryTest {
                         lastUpdatedDate
                 ).get();
         final var result =
-                mongoReviewRepository.save(review);
-         Assertions.assertTrue(result instanceof Mono<Review>);
+                mongoReviewRepository.save(review).block();
+        System.out.println("result = " + result);
+        final var x = reactiveMongodbReviewRepository.count();
+        System.out.println(x.block());
+         Assertions.assertEquals(1,x.block());
     }
-
 }

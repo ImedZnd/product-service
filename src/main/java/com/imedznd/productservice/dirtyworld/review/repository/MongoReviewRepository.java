@@ -17,7 +17,7 @@ public class MongoReviewRepository implements ReviewRepository {
 
     private final ReactiveMongodbReviewRepository reactiveMongodbReviewRepository;
 
-    public MongoReviewRepository(ReactiveMongodbReviewRepository reactiveMongodbReviewRepository) {
+    private MongoReviewRepository(ReactiveMongodbReviewRepository reactiveMongodbReviewRepository) {
         this.reactiveMongodbReviewRepository = reactiveMongodbReviewRepository;
     }
 
