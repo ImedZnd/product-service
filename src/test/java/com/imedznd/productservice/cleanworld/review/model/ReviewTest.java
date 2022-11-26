@@ -173,33 +173,6 @@ class ReviewTest {
     }
 
     @Test
-    @DisplayName("lastUpdatedDate must not be in the future")
-    void lastUpdatedDate_must_not_be_in_the_future() {
-        final var description = "description";
-        final var title = "title";
-        final var rating = 5;
-        final var userId = "userId";
-        final var createdDate = Instant.ofEpochSecond(
-                LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
-        final var lastUpdatedDate = Instant.ofEpochSecond(
-                LocalDateTime.now().plusDays(5).minusDays(1).toEpochSecond(ZoneOffset.UTC));
-        final var result =
-                Review.of(null,
-                        description,
-                        title,
-                        rating,
-                        userId,
-                        createdDate,
-                        lastUpdatedDate
-                ).getLeft();
-        assertAll(
-                () -> assertEquals(2,result.size())
-//                () -> assertTrue(result.stream().anyMatch(it -> it instanceof Review.ReviewError.CreatedDateError)),
-//                () -> assertTrue(result.stream().anyMatch(it -> it instanceof Review.ReviewError.LastUpdatedDateError))
-        );
-    }
-
-    @Test
     @DisplayName("lastUpdatedDate must not be greater than today")
     void review_lastUpdatedDate_must_not_be_greater_than_today() {
         final var description = "description";

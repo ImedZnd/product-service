@@ -547,62 +547,6 @@ class ProductTest {
     }
 
     @Test
-    @DisplayName("CreatedDate should not be in the future")
-    void createdDate_should_not_be_in_the_future() {
-        final var description = "description";
-        final var title = "title";
-        final var rating = 5;
-        final var userId = "userId";
-        final var localDateTime = LocalDateTime.parse("2019-10-25T12:15:30");
-        final var timeInSeconds = localDateTime.toEpochSecond(ZoneOffset.UTC);
-        final var createdDate = Instant.ofEpochSecond(timeInSeconds);
-        final var lastUpdatedDate = Instant.ofEpochSecond(timeInSeconds);
-        final var review =
-                Review.of(null,
-                        description,
-                        title,
-                        rating,
-                        userId,
-                        createdDate,
-                        lastUpdatedDate
-                ).get();
-        final var name = "name";
-        final var productDescription = "productDescription";
-        final var price = BigDecimal.valueOf(1200);
-        final var category = "category";
-        final var imgUrl = "imgUrl";
-        final var saleCounter = 10;
-        final var productRating = 5;
-        final var status = Product.ProductStatus.AVAILABLE;
-        final var reviews = Set.of(review);
-        final var productCreatedDate = Instant.ofEpochSecond(
-                LocalDateTime.now().plusDays(5).toEpochSecond(ZoneOffset.UTC));
-        final var productLastUpdatedDate = Instant.ofEpochSecond(
-                LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
-        final var result =
-                Product.of(
-                        null,
-                        name,
-                        productDescription,
-                        price,
-                        category,
-                        imgUrl,
-                        saleCounter,
-                        productRating,
-                        status,
-                        reviews,
-                        productCreatedDate,
-                        productLastUpdatedDate
-                ).getLeft();
-        result.stream().forEach(System.out::println);
-        assertAll(
-                () -> assertEquals(2, result.size()),
-                () -> assertTrue(result.stream().anyMatch(it -> it instanceof Product.ProductError.CreatedDateError)),
-                () -> assertTrue(result.stream().anyMatch(it -> it instanceof Product.ProductError.LastUpdatedDateError))
-        );
-    }
-
-    @Test
     @DisplayName("LastUpdatedDate should not be in the future")
     void LastUpdatedDate_should_not_be_in_the_future() {
         final var description = "description";
